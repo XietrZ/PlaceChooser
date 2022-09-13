@@ -79,8 +79,10 @@ const styles = StyleSheet.create({
     width: screen.width,
     height: 100,
     paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  bottomMenuResetWrapper: {
+  bottomMenuIconWrapper: {
     width: 132,
     height: 95,
     justifyContent: "center",
@@ -145,7 +147,7 @@ function homeView(parameterList) {
           style={{ height: screen.height }}
         >
           <View style={styles.container}>
-            <View style={{ backgroundColor: Colors.black }}>
+            <View>
               {/* App Title */}
               <SafeAreaView>
                 <View style={styles.appTitleWrapper}>
@@ -167,7 +169,8 @@ function homeView(parameterList) {
             {/* Menu */}
             <View style={styles.bottomScreenLayoutWrapper}>
               <View style={styles.bottomMenuLayoutWrapper}>
-                <View style={styles.bottomMenuResetWrapper}>
+                {/* Reset Button */}
+                <View style={styles.bottomMenuIconWrapper}>
                   <TouchableOpacity
                     onPress={() => onResetButtonPress(parameterList)}
                   >
@@ -182,6 +185,23 @@ function homeView(parameterList) {
                       }}
                     >
                       Reset
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {/* List Button */}
+                <View style={styles.bottomMenuIconWrapper}>
+                  <TouchableOpacity
+                    onPress={() => alert("Show List of Places Page")}
+                  >
+                    <Image source={require("../assets/images/listIcon.png")} />
+                    <Text
+                      style={{
+                        paddingTop: 3,
+                        color: Colors.orange,
+                        fontFamily: "Roboto-Regular",
+                      }}
+                    >
+                      List
                     </Text>
                   </TouchableOpacity>
                 </View>
