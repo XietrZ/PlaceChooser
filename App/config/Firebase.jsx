@@ -1,7 +1,26 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore,  addDoc, collection, doc, setDoc, updateDoc, deleteDoc,query, getDocs, onSnapshot,where, getDoc} from "firebase/firestore";
+import { 
+  getFirestore,  
+  addDoc, 
+  collection, 
+  doc, 
+  setDoc, 
+  updateDoc, 
+  deleteDoc, 
+  query, 
+  getDocs, 
+  onSnapshot, 
+  where, 
+  getDoc,
+  orderBy,
+  enableIndexedDbPersistence,
+  initializeFirestore, 
+  CACHE_SIZE_UNLIMITED ,
+  disableNetwork
+} 
+from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -30,8 +49,13 @@ console.log("Initialize Firebase")
 // Initialize firestore
 export const db = getFirestore(app)
 
+// export const db = initializeFirestore(app, {
+//   cacheSizeBytes: CACHE_SIZE_UNLIMITED
+// });
 
 
+
+//********************************************************************************* */
 
 /**
  * Save Data
@@ -53,13 +77,15 @@ export const saveDataToFirebaseDatabase = (placeName) => {
 
   //--> Submit data with addDocs method
   addDoc(collection(db, "places"), {
-    name: "Cabiyay",
+    name: placeName,
   })
     .then(() => {
       console.log("Data saved successfully!");
+      alert(placeName+" was saved successfully!")
     })
     .catch((error) => {
       console.log("Error on saving data: ", error);
+      alert("Error on saving data")
     });
 }
 
@@ -87,41 +113,42 @@ export const updateDataToDatabase = (placeName) =>{
  * Delete Data in database
  * @param {*} placeName 
  */
-export const deleteDataToDatabase = (placeName) =>{
-  deleteDoc(doc(db, "places","0"))
+export const deleteDataToDatabase = (selectedPlace,selectedPlaceID) =>{
+  console.log("selectedPlaceID Firebase.jsx: "+selectedPlaceID)
+  deleteDoc(doc(db, "places",""+selectedPlaceID))
     .then(() => {
       console.log("Data deleted successfully!");
+      alert(selectedPlace," deleted successfully!")
     })
     .catch((error) => {
       console.log("Error on deleting data: ", error);
+      alert("Error on deleting "+selectedPlace+" : "+error);
+
     });
 }
 
 /**
  * Fetch Data in REAL TIME. Meaning kung may changes sa database or update, automatic update sad sya
  */
-export const fetchDatafromDatabase = (placeList,setPlaces) => {
+export const fetchDatafromDatabase = (setPlaces) => {
   console.log("Begin fetching database data");
 
-  setPlaces([])
 
-   //--> 2nd Way To Extract
-   const list = async () => {
-    const q = query(collection(db, "places"));
-    const places = [];
-    const querySnapshot = await getDocs(q);
+   //--> 1st Way To Extract
+   const q = query(collection(db, "places"),orderBy("name", "asc"));
+   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const placesArray = [];
+    
     querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
-      places.push(doc.data().name);
+      // places.push(doc.data());
+      const temp = {id:doc.id,name:doc.data().name};
+      placesArray.push(temp);
+      console.log("1st Way To Extract = ",doc.id, " => ", doc.data());
     });
-    // await setPlaces(places);
-    console.log("state places: ", placeList);
-  };
-  list();
+    // console.log("Current Places to choose from: ", places.join(", "));
+    setPlaces(placesArray);
+  });
 
-
-  
 
 
 }

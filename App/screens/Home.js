@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 
 import Colors from "../constants/Colors";
+import { ConversionContext } from "../util/GlobalStateVariables";
 import {
   db,
   saveDataToFirebaseDatabase,
@@ -79,8 +80,10 @@ const styles = StyleSheet.create({
     width: screen.width,
     height: 100,
     paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  bottomMenuResetWrapper: {
+  bottomMenuIconWrapper: {
     width: 132,
     height: 95,
     justifyContent: "center",
@@ -93,14 +96,19 @@ const styles = StyleSheet.create({
 
 SplashScreen.preventAutoHideAsync();
 
-export default () => {
-  const [shouldShow, setShouldShow] = useState(true);
-  const [places, setPlaces] = useState([]);
+export default ({ navigation }) => {
+  const {
+    shouldShow,
+    setShouldShow,
+    places,
+    setPlaces,
+    placeName,
+    setPlaceName,
+  } = useContext(ConversionContext);
 
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
   });
-
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -122,6 +130,9 @@ export default () => {
     setShouldShow,
     places,
     setPlaces,
+    placeName,
+    setPlaceName,
+    navigation,
   };
   return <View onLayout={onLayoutRootView}>{homeView(parameterList)}</View>;
 };
@@ -130,7 +141,8 @@ export default () => {
 function _______________________________________________________________() {}
 
 function homeView(parameterList) {
-  const { homeViewComponentData, shouldShow, places } = parameterList;
+  const { homeViewComponentData, navigation, shouldShow, placeName } =
+    parameterList;
   return (
     <FlatList
       data={homeViewComponentData}
@@ -145,7 +157,7 @@ function homeView(parameterList) {
           style={{ height: screen.height }}
         >
           <View style={styles.container}>
-            <View style={{ backgroundColor: Colors.black }}>
+            <View>
               {/* App Title */}
               <SafeAreaView>
                 <View style={styles.appTitleWrapper}>
@@ -157,9 +169,7 @@ function homeView(parameterList) {
               {/* Show Location Text */}
               {!shouldShow ? (
                 <View style={styles.showLocationTextWrapper}>
-                  <Text style={styles.showLocationText}>
-                    MARVINS SWIMMING POOL
-                  </Text>
+                  <Text style={styles.showLocationText}>{placeName}</Text>
                 </View>
               ) : null}
             </View>
@@ -167,10 +177,11 @@ function homeView(parameterList) {
             {/* Menu */}
             <View style={styles.bottomScreenLayoutWrapper}>
               <View style={styles.bottomMenuLayoutWrapper}>
-                <View style={styles.bottomMenuResetWrapper}>
-                  <TouchableOpacity
-                    onPress={() => onResetButtonPress(parameterList)}
-                  >
+                {/* Reset Button */}
+                <TouchableOpacity
+                  onPress={() => onResetButtonPress(parameterList)}
+                >
+                  <View style={styles.bottomMenuIconWrapper}>
                     <Image
                       source={require("../assets/images/refreshIcon.png")}
                     />
@@ -183,8 +194,23 @@ function homeView(parameterList) {
                     >
                       Reset
                     </Text>
-                  </TouchableOpacity>
-                </View>
+                  </View>
+                </TouchableOpacity>
+                {/* List Button */}
+                <TouchableOpacity onPress={() => navigation.push("Places")}>
+                  <View style={styles.bottomMenuIconWrapper}>
+                    <Image source={require("../assets/images/listIcon.png")} />
+                    <Text
+                      style={{
+                        paddingTop: 3,
+                        color: Colors.orange,
+                        fontFamily: "Roboto-Regular",
+                      }}
+                    >
+                      List
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -218,15 +244,24 @@ function showSelectorButtonLayout(parameterList) {
 const onSelectorButtonPress = (parameterList) => {
   const { setShouldShow } = parameterList;
   setShouldShow(false);
+  selectPlaceNameRandomly(parameterList);
   homeView(parameterList);
 };
 
 const onResetButtonPress = (parameterList) => {
-  const { places, setPlaces, setShouldShow } = parameterList;
+  const { setShouldShow } = parameterList;
   setShouldShow(true);
   homeView(parameterList);
-  // saveDataToFirebaseDatabase(place);
-  // updateDataToDatabase(place);
-  // deleteDataToDatabase(place);
-  fetchDatafromDatabase(places, setPlaces);
+};
+
+const selectPlaceNameRandomly = (parameterList) => {
+  const { places, setPlaceName } = parameterList;
+
+  const randomNumber = Math.floor(Math.random(places.length) * 10); // generate number from 0 up to the places.length.
+
+  places.map((data, index) => {
+    if (randomNumber == index) {
+      setPlaceName(data.name);
+    }
+  });
 };
