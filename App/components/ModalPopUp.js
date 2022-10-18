@@ -169,7 +169,6 @@ export const ShowEditPlaceModal = ({ parameterList }) => {
     selectedPlaceID,
   } = parameterList;
 
-  console.log("selectedPlaceID ModalPopUp.js: " + selectedPlaceID);
   return (
     <View>
       <Modal
@@ -233,7 +232,5 @@ function savePlace(addPlaceText, setAddPlaceText, setShowAddModal) {
 function deletePlace(selectedPlace, setShowEditPlaceModal, selectedPlaceID) {
   // alert("Delete: " + selectedPlace);
   setShowEditPlaceModal(false);
-
-  console.log("selectedPlaceID ModalPopUp_2.js: " + selectedPlaceID);
   deleteDataToDatabase(selectedPlace, selectedPlaceID);
 }

@@ -127,8 +127,6 @@ export default ({ navigation, route }) => {
     selectedPlaceID,
     setSelectedPlaceID,
   };
-
-  console.log("selectedPlaceID Places.js_1: " + selectedPlaceID);
   return <View onLayout={onLayoutRootView}>{placesView(parameterList)}</View>;
 };
 
@@ -138,8 +136,6 @@ function _______________________________________________________________() {}
 function placesView(parameterList) {
   const { navigation, places, setShowAddModal, selectedPlaceID } =
     parameterList;
-
-  // console.log("places List in Places.js: ", places);
   return (
     <LinearGradient
       // Button Linear Gradient
@@ -183,7 +179,6 @@ function placesView(parameterList) {
         {/* Modal Pop Up For Add Place */}
         <ModalPopUp parameterList={parameterList}></ModalPopUp>
 
-        {console.log("selectedPlaceID Places.js_2: " + selectedPlaceID)}
         <ShowEditPlaceModal parameterList={parameterList}></ShowEditPlaceModal>
 
         {/* Menu */}
